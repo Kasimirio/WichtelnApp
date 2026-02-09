@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wichteln Organizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8B4513;
+            --primary-light: #A0522D;
+            --accent: #D4AF37;
+            --bg-cream: #FFF8F0;
+            --bg-white: #FFFFFF;
+            --text-dark: #2C1810;
+            --text-mid: #6B4423;
+            --border: #E8D5C4;
+            --success: #2D5016;
+            --danger: #8B2635;
+            --shadow: rgba(139, 69, 19, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, var(--bg-cream) 0%, #FFF5E6 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: var(--text-mid);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 24px var(--shadow);
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.3s; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s ease;
+            background: var(--bg-cream);
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        input[type="datetime-local"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-white);
+            box-shadow: 0 0 0 4px rgba(139, 69, 19, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--accent);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #E5C158;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #A12D3E;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .participant-list {
+            margin-top: 20px;
+        }
+
+        .participant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--bg-cream);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .participant-info {
+            flex: 1;
+        }
+
+        .participant-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .participant-phone {
+            font-size: 0.9rem;
+            color: var(--text-mid);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-left: 12px;
+        }
+
+        .badge-pending {
+            background: #FFF3CD;
+            color: #856404;
+        }
+
+        .badge-assigned {
+            background: #D4EDDA;
+            color: var(--success);
+        }
+
+        .join-link {
+            background: var(--bg-cream);
+            padding: 16px;
+            border-radius: 8px;
+            border: 2px dashed var(--primary);
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .join-link-url {
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+            font-weight: 600;
+            word-break: break-all;
+            display: block;
+            margin: 8px 0;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #D4EDDA;
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .alert-info {
+            background: #D1ECF1;
+            border-color: #0C5460;
+            color: #0C5460;
+        }
+
+        .alert-warning {
+            background: #FFF3CD;
+            border-color: #856404;
+            color: #856404;
+        }
+
+        .participant-view {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .gift-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        .assigned-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .delete-section {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 2px solid var(--border);
+        }
+
+        .delete-warning {
+            background: #FFF3CD;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid #856404;
+            color: #856404;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-mid);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .countdown {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            border-radius: 12px;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .countdown-time {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function WichtelnApp() {
+            const [view, setView] = useState('loading');
+            const [eventData, setEventData] = useState(null);
+            const [participantId, setParticipantId] = useState(null);
+            
+            // Organizer form states
+            const [eventName, setEventName] = useState('');
+            const [drawDate, setDrawDate] = useState('');
+            const [newParticipantName, setNewParticipantName] = useState('');
+            const [newParticipantPhone, setNewParticipantPhone] = useState('');
+            
+            // Join form states
+            const [joinName, setJoinName] = useState('');
+            const [joinPhone, setJoinPhone] = useState('');
+
+            useEffect(() => {
+                initializeApp();
+            }, []);
+
+            const initializeApp = async () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const eventId = urlParams.get('event');
+                const participantToken = urlParams.get('p');
+
+                if (participantToken) {
+                    // Participant view
+                    await loadParticipantView(participantToken);
+                } else if (eventId) {
+                    // Join page
+                    await loadJoinPage(eventId);
+                } else {
+                    // Check if organizer has existing event
+                    await loadOrganizerDashboard();
+                }
+            };
+
+            const loadOrganizerDashboard = async () => {
+                try {
+                    const result = await window.storage.get('wichteln-event');
+                    if (result && result.value) {
+                        const data = JSON.parse(result.value);
+                        setEventData(data);
+                        setView('organizer');
+                    } else {
+                        setView('create-event');
+                    }
+                } catch (error) {
+                    setView('create-event');
+                }
+            };
+
+            const loadJoinPage = async (eventId) => {
+                try {
+                    const result = await window.storage.get('wichteln-event');
+                    if (result && result.value) {
+                        const data = JSON.parse(result.value);
+                        if (data.id === eventId) {
+                            setEventData(data);
+                            setView('join');
+                        } else {
+                            setView('error');
+                        }
+                    } else {
+                        setView('error');
+                    }
+                } catch (error) {
+                    setView('error');
+                }
+            };
+
+            const loadParticipantView = async (token) => {
+                try {
+                    const result = await window.storage.get('wichteln-event');
+                    if (result && result.value) {
+                        const data = JSON.parse(result.value);
+                        const participant = data.participants.find(p => p.token === token);
+                        
+                        if (participant) {
+                            setEventData(data);
+                            setParticipantId(participant.id);
+                            
+                            if (data.status === 'completed' && participant.assignedTo) {
+                                setView('participant-assigned');
+                            } else {
+                                setView('participant-waiting');
+                            }
+                        } else {
+                            setView('error');
+                        }
+                    } else {
+                        setView('error');
+                    }
+                } catch (error) {
+                    setView('error');
+                }
+            };
+
+            const createEvent = async () => {
+                if (!eventName.trim() || !drawDate) {
+                    alert('Bitte fülle alle Felder aus');
+                    return;
+                }
+
+                const eventId = 'ev-' + Date.now();
+                const newEvent = {
+                    id: eventId,
+                    name: eventName,
+                    drawDate: drawDate,
+                    status: 'pending',
+                    participants: [],
+                    createdAt: new Date().toISOString()
+                };
+
+                try {
+                    await window.storage.set('wichteln-event', JSON.stringify(newEvent));
+                    setEventData(newEvent);
+                    setView('organizer');
+                } catch (error) {
+                    alert('Fehler beim Erstellen des Events');
+                }
+            };
+
+            const addParticipant = async () => {
+                if (!newParticipantName.trim() || !newParticipantPhone.trim()) {
+                    alert('Bitte Name und Telefonnummer eingeben');
+                    return;
+                }
+
+                const participantId = 'p-' + Date.now();
+                const token = 'tk-' + Math.random().toString(36).substr(2, 16);
+                
+                const newParticipant = {
+                    id: participantId,
+                    name: newParticipantName,
+                    phone: newParticipantPhone,
+                    token: token,
+                    assignedTo: null,
+                    joinedAt: new Date().toISOString()
+                };
+
+                const updatedEvent = {
+                    ...eventData,
+                    participants: [...eventData.participants, newParticipant]
+                };
+
+                try {
+                    await window.storage.set('wichteln-event', JSON.stringify(updatedEvent));
+                    setEventData(updatedEvent);
+                    setNewParticipantName('');
+                    setNewParticipantPhone('');
+                } catch (error) {
+                    alert('Fehler beim Hinzufügen des Teilnehmers');
+                }
+            };
+
+            const joinEvent = async () => {
+                if (!joinName.trim() || !joinPhone.trim()) {
+                    alert('Bitte Name und Telefonnummer eingeben');
+                    return;
+                }
+
+                const participantId = 'p-' + Date.now();
+                const token = 'tk-' + Math.random().toString(36).substr(2, 16);
+                
+                const newParticipant = {
+                    id: participantId,
+                    name: joinName,
+                    phone: joinPhone,
+                    token: token,
+                    assignedTo: null,
+                    joinedAt: new Date().toISOString()
+                };
+
+                const updatedEvent = {
+                    ...eventData,
+                    participants: [...eventData.participants, newParticipant]
+                };
+
+                try {
+                    await window.storage.set('wichteln-event', JSON.stringify(updatedEvent));
+                    alert('Erfolgreich angemeldet! Du erhältst eine Benachrichtigung am ' + new Date(eventData.drawDate).toLocaleString('de-DE'));
+                    setJoinName('');
+                    setJoinPhone('');
+                } catch (error) {
+                    alert('Fehler bei der Anmeldung');
+                }
+            };
+
+            const performDraw = async () => {
+                if (eventData.participants.length < 2) {
+                    alert('Mindestens 2 Teilnehmer benötigt!');
+                    return;
+                }
+
+                // Create random assignments
+                const participants = [...eventData.participants];
+                const available = [...participants];
+                const assignments = [];
+
+                for (let i = 0; i < participants.length; i++) {
+                    const giver = participants[i];
+                    
+                    // Filter out the giver themselves
+                    const validReceivers = available.filter(p => p.id !== giver.id);
+                    
+                    if (validReceivers.length === 0) {
+                        // Restart if we get stuck
+                        return performDraw();
+                    }
+                    
+                    // Pick random receiver
+                    const randomIndex = Math.floor(Math.random() * validReceivers.length);
+                    const receiver = validReceivers[randomIndex];
+                    
+                    assignments.push({ giverId: giver.id, receiverId: receiver.id });
+                    
+                    // Remove receiver from available
+                    const indexInAvailable = available.findIndex(p => p.id === receiver.id);
+                    available.splice(indexInAvailable, 1);
+                }
+
+                // Update participants with assignments
+                const updatedParticipants = participants.map(p => {
+                    const assignment = assignments.find(a => a.giverId === p.id);
+                    return {
+                        ...p,
+                        assignedTo: assignment.receiverId
+                    };
+                });
+
+                const updatedEvent = {
+                    ...eventData,
+                    participants: updatedParticipants,
+                    status: 'completed',
+                    drawnAt: new Date().toISOString()
+                };
+
+                try {
+                    await window.storage.set('wichteln-event', JSON.stringify(updatedEvent));
+                    setEventData(updatedEvent);
+                    alert('Ziehung erfolgreich! Alle Teilnehmer wurden zugewiesen.');
+                } catch (error) {
+                    alert('Fehler bei der Ziehung');
+                }
+            };
+
+            const deleteParticipant = async (participantId) => {
+                if (!confirm('Diesen Teilnehmer wirklich löschen?')) return;
+
+                const updatedEvent = {
+                    ...eventData,
+                    participants: eventData.participants.filter(p => p.id !== participantId)
+                };
+
+                try {
+                    await window.storage.set('wichteln-event', JSON.stringify(updatedEvent));
+                    setEventData(updatedEvent);
+                } catch (error) {
+                    alert('Fehler beim Löschen');
+                }
+            };
+
+            const deleteMyData = async () => {
+                if (!confirm('Möchtest du deine Daten wirklich löschen? Du kannst danach nicht mehr an diesem Wichteln teilnehmen.')) return;
+
+                const updatedEvent = {
+                    ...eventData,
+                    participants: eventData.participants.filter(p => p.id !== participantId)
+                };
+
+                try {
+                    await window.storage.set('wichteln-event', JSON.stringify(updatedEvent));
+                    alert('Deine Daten wurden gelöscht.');
+                    window.location.href = window.location.origin + window.location.pathname;
+                } catch (error) {
+                    alert('Fehler beim Löschen');
+                }
+            };
+
+            const deleteAllData = async () => {
+                if (!confirm('ACHTUNG: Alle Daten des Wichteln-Events werden unwiderruflich gelöscht! Fortfahren?')) return;
+                if (!confirm('Bist du dir sicher? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+
+                try {
+                    await window.storage.delete('wichteln-event');
+                    alert('Alle Daten wurden gelöscht.');
+                    window.location.href = window.location.origin + window.location.pathname;
+                } catch (error) {
+                    alert('Fehler beim Löschen');
+                }
+            };
+
+            const autoDeleteAfterDraw = async () => {
+                if (eventData.status === 'completed' && eventData.participants.every(p => p.assignedTo)) {
+                    const drawTime = new Date(eventData.drawnAt).getTime();
+                    const now = Date.now();
+                    const hoursSinceDraw = (now - drawTime) / (1000 * 60 * 60);
+
+                    // Auto-delete 24 hours after draw
+                    if (hoursSinceDraw >= 24) {
+                        await window.storage.delete('wichteln-event');
+                    }
+                }
+            };
+
+            useEffect(() => {
+                if (eventData) {
+                    autoDeleteAfterDraw();
+                    
+                    // Check if it's time to draw
+                    const checkDrawTime = setInterval(() => {
+                        if (eventData.status === 'pending' && new Date(eventData.drawDate) <= new Date()) {
+                            performDraw();
+                        }
+                    }, 60000); // Check every minute
+
+                    return () => clearInterval(checkDrawTime);
+                }
+            }, [eventData]);
+
+            const getJoinUrl = () => {
+                return `${window.location.origin}${window.location.pathname}?event=${eventData.id}`;
+            };
+
+            const getParticipantUrl = (token) => {
+                return `${window.location.origin}${window.location.pathname}?p=${token}`;
+            };
+
+            const copyToClipboard = (text) => {
+                navigator.clipboard.writeText(text);
+                alert('Link kopiert!');
+            };
+
+            if (view === 'loading') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Wichteln 🎁</h1>
+                        </div>
+                        <div className="card">
+                            <p style={{textAlign: 'center'}}>Lädt...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (view === 'error') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Wichteln 🎁</h1>
+                        </div>
+                        <div className="card">
+                            <div className="empty-state">
+                                <div className="empty-state-icon">⚠️</div>
+                                <h2>Event nicht gefunden</h2>
+                                <p>Dieser Link ist ungültig oder das Event wurde bereits gelöscht.</p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (view === 'create-event') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Wichteln 🎁</h1>
+                            <p>Organisiere dein Secret Santa Event</p>
+                        </div>
+                        
+                        <div className="card">
+                            <div className="card-header">
+                                <h2 className="card-title">Neues Event erstellen</h2>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Event-Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="z.B. Familie Wichteln 2024"
+                                    value={eventName}
+                                    onChange={(e) => setEventName(e.target.value)}
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Zeitpunkt der Ziehung</label>
+                                <input
+                                    type="datetime-local"
+                                    value={drawDate}
+                                    onChange={(e) => setDrawDate(e.target.value)}
+                                />
+                            </div>
+                            
+                            <button className="btn btn-primary" onClick={createEvent}>
+                                Event erstellen
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (view === 'organizer') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Wichteln 🎁</h1>
+                            <p>{eventData.name}</p>
+                        </div>
+
+                        {eventData.status === 'pending' && new Date(eventData.drawDate) > new Date() && (
+                            <div className="countdown">
+                                <div className="countdown-label">Ziehung geplant für</div>
+                                <div className="countdown-time">
+                                    {new Date(eventData.drawDate).toLocaleString('de-DE', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {eventData.status === 'completed' && (
+                            <div className="alert alert-success">
+                                ✓ Ziehung abgeschlossen! Alle Teilnehmer wurden benachrichtigt. Die Daten werden automatisch nach 24 Stunden gelöscht.
+                            </div>
+                        )}
+                        
+                        <div className="card">
+                            <div className="card-header">
+                                <h2 className="card-title">Teilnehmer hinzufügen</h2>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="Max Mustermann"
+                                    value={newParticipantName}
+                                    onChange={(e) => setNewParticipantName(e.target.value)}
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Telefonnummer</label>
+                                <input
+                                    type="tel"
+                                    placeholder="+49 123 456789"
+                                    value={newParticipantPhone}
+                                    onChange={(e) => setNewParticipantPhone(e.target.value)}
+                                />
+                            </div>
+                            
+                            <button className="btn btn-primary" onClick={addParticipant}>
+                                Teilnehmer hinzufügen
+                            </button>
+                        </div>
+
+                        <div className="card">
+                            <div className="card-header">
+                                <h2 className="card-title">Einladungslink</h2>
+                            </div>
+                            
+                            <div className="alert alert-info">
+                                Teile diesen Link, damit sich Teilnehmer selbst anmelden können:
+                            </div>
+                            
+                            <div className="join-link">
+                                <span className="join-link-url">{getJoinUrl()}</span>
+                                <button 
+                                    className="btn btn-secondary btn-small" 
+                                    onClick={() => copyToClipboard(getJoinUrl())}
+                                    style={{marginTop: '12px'}}
+                                >
+                                    Link kopieren
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div className="card">
+                            <div className="card-header">
+                                <h2 className="card-title">Teilnehmer ({eventData.participants.length})</h2>
+                            </div>
+                            
+                            {eventData.participants.length === 0 ? (
+                                <div className="empty-state">
+                                    <div className="empty-state-icon">👥</div>
+                                    <p>Noch keine Teilnehmer</p>
+                                </div>
+                            ) : (
+                                <div className="participant-list">
+                                    {eventData.participants.map(participant => (
+                                        <div key={participant.id} className="participant-item">
+                                            <div className="participant-info">
+                                                <div className="participant-name">{participant.name}</div>
+                                                <div className="participant-phone">{participant.phone}</div>
+                                            </div>
+                                            <div>
+                                                {participant.assignedTo ? (
+                                                    <span className="badge badge-assigned">Zugewiesen</span>
+                                                ) : (
+                                                    <span className="badge badge-pending">Wartet</span>
+                                                )}
+                                                <button 
+                                                    className="btn btn-danger btn-small"
+                                                    onClick={() => deleteParticipant(participant.id)}
+                                                    style={{marginLeft: '8px'}}
+                                                >
+                                                    Löschen
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {eventData.status === 'pending' && eventData.participants.length >= 2 && (
+                                <div style={{marginTop: '24px'}}>
+                                    <button className="btn btn-primary" onClick={performDraw}>
+                                        Jetzt Ziehung durchführen
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="card">
+                            <div className="delete-section">
+                                <h3 style={{marginBottom: '16px', color: 'var(--danger)'}}>Gefahrenzone</h3>
+                                <div className="delete-warning">
+                                    ⚠️ Das Löschen aller Daten kann nicht rückgängig gemacht werden!
+                                </div>
+                                <button className="btn btn-danger" onClick={deleteAllData}>
+                                    Alle Daten löschen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (view === 'join') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Wichteln 🎁</h1>
+                            <p>{eventData.name}</p>
+                        </div>
+                        
+                        <div className="card">
+                            <div className="card-header">
+                                <h2 className="card-title">Jetzt teilnehmen</h2>
+                            </div>
+                            
+                            <div className="alert alert-info">
+                                Die Ziehung findet statt am: {new Date(eventData.drawDate).toLocaleString('de-DE')}
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Dein Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="Max Mustermann"
+                                    value={joinName}
+                                    onChange={(e) => setJoinName(e.target.value)}
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Deine Telefonnummer</label>
+                                <input
+                                    type="tel"
+                                    placeholder="+49 123 456789"
+                                    value={joinPhone}
+                                    onChange={(e) => setJoinPhone(e.target.value)}
+                                />
+                            </div>
+                            
+                            <button className="btn btn-primary" onClick={joinEvent}>
+                                Anmelden
+                            </button>
+
+                            <div style={{marginTop: '24px', padding: '16px', background: 'var(--bg-cream)', borderRadius: '8px'}}>
+                                <p style={{fontSize: '0.9rem', color: 'var(--text-mid)'}}>
+                                    <strong>Datenschutz:</strong> Deine Daten werden nur für dieses Wichteln verwendet und automatisch 24 Stunden nach der Ziehung gelöscht. Du kannst deine Daten jederzeit selbst löschen.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (view === 'participant-waiting') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Wichteln 🎁</h1>
+                            <p>{eventData.name}</p>
+                        </div>
+                        
+                        <div className="card">
+                            <div className="participant-view">
+                                <div className="gift-icon">⏳</div>
+                                <h2>Noch nicht soweit!</h2>
+                                <p style={{color: 'var(--text-mid)', margin: '20px 0'}}>
+                                    Die Ziehung findet statt am:<br/>
+                                    <strong>{new Date(eventData.drawDate).toLocaleString('de-DE')}</strong>
+                                </p>
+                                <p style={{color: 'var(--text-mid)'}}>
+                                    Du erhältst dann automatisch eine Benachrichtigung mit deiner Zuweisung.
+                                </p>
+                            </div>
+
+                            <div className="delete-section">
+                                <h3 style={{marginBottom: '16px', textAlign: 'center'}}>Deine Daten</h3>
+                                <div className="delete-warning">
+                                    Du kannst deine Teilnahme jederzeit widerrufen und deine Daten löschen.
+                                </div>
+                                <button className="btn btn-danger" onClick={deleteMyData} style={{width: '100%'}}>
+                                    Meine Daten löschen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (view === 'participant-assigned') {
+                const assignedPerson = eventData.participants.find(p => p.id === 
+                    eventData.participants.find(part => part.id === participantId).assignedTo
+                );
+
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Wichteln 🎁</h1>
+                            <p>{eventData.name}</p>
+                        </div>
+                        
+                        <div className="card">
+                            <div className="participant-view">
+                                <div className="gift-icon">🎁</div>
+                                <h2>Du beschenkst:</h2>
+                                <div className="assigned-name">{assignedPerson.name}</div>
+                                <p style={{color: 'var(--text-mid)', marginTop: '20px'}}>
+                                    Viel Spaß beim Geschenke besorgen! 🎄
+                                </p>
+                            </div>
+
+                            <div className="delete-section">
+                                <h3 style={{marginBottom: '16px', textAlign: 'center'}}>Deine Daten</h3>
+                                <div className="delete-warning">
+                                    Du kannst deine Daten jederzeit löschen. Deine Daten werden automatisch 24 Stunden nach der Ziehung gelöscht.
+                                </div>
+                                <button className="btn btn-danger" onClick={deleteMyData} style={{width: '100%'}}>
+                                    Meine Daten jetzt löschen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return null;
+        }
+
+        ReactDOM.render(<WichtelnApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
