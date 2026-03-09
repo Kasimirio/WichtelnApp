@@ -1,0 +1,17 @@
+{
+  "name": "wichteln-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Secret Santa (Wichteln) gift-exchange organizer",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug"
+  },
+  "devDependencies": {
+    "@babel/standalone": "^7.23.5",
+    "@playwright/test": "^1.48.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
